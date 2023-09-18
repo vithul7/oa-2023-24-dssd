@@ -1,3 +1,7 @@
+# Extra Note From Vithul
+
+Hi DSSD-Madison. Thank you for letting me submit this late, and I remain extremely interested to join and contribute to the team! It looks very exciting. Hope you like my project. 
+
 # DSSD 2023-2024 Admissions Assessment
 
 This repository has starter code that you will build on to show your skills as a developer. [Fork this repository](https://github.com/DSSD-Madison/oa-2023-24/fork) to get started on your own copy.
