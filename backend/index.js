@@ -1,8 +1,10 @@
 import axios from 'axios';
 import express from 'express';
 import cors from 'cors';
+import dotenv from 'dotenv';
 
-const token = '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';
+dotenv.config();
+const token = process.env.TOKEN;
 const owner = 'SimplifyJobs';
 const repo = 'Summer2024-Internships';
 const perPage = 100;
@@ -24,14 +26,11 @@ app.get("/", (req, res) => {
     let currInterval = 0;
     let count = 0;
     const fetchData = (page, xData, yData, earliestDate) => {
-        console.log("page: " + page);
         const url = `https://api.github.com/repos/${owner}/${repo}/forks?per_page=${perPage}&page=${page}`;
         axios.get(url, { headers })
             .then((response) => {
                 if (page == 0) {
                     // send graph data to frontend once all pages are exhausted
-                    console.log(xData);
-                    console.log(yData);
                     const graphData = {
                         x: xData,
                         y: yData,
@@ -44,10 +43,6 @@ app.get("/", (req, res) => {
                     ({ hoursFromEarliest, earliestDate } = convertDatesIntoHours(response, earliestDate));
 
                     ({currInterval, count} = createGraphData(hoursFromEarliest, xData, yData, currInterval, count));
-                    console.log(xData);
-                    console.log(yData);
-                    console.log(hoursFromEarliest);
-                    console.log("----");
                     // fetch the previous page using recursion
                     fetchData(page - 1, xData, yData, earliestDate);
                 }
@@ -65,7 +60,6 @@ app.get("/", (req, res) => {
         .then((response) => {
             // getting the last page from the amount of forks using our perPage parameter
             const lastPage = Math.ceil(response.data.forks_count / perPage);
-            console.log(lastPage);
             fetchData(lastPage, xData, yData, 0);
         })
         .catch((error) => {
@@ -87,7 +81,6 @@ function convertDatesIntoHours(response, earliestDate) {
     const dates = [];
     response.data.forEach(function (element) {
         dates.push(element.created_at);
-        // console.log(element.created_at);
     });
 
     const dateObjects = dates.map((dateTimeString) => new Date(dateTimeString));
@@ -96,10 +89,6 @@ function convertDatesIntoHours(response, earliestDate) {
         // if earliest date hasn't been set (on last page), set it
         earliestDate = Math.min(...dateObjects);
     }
-
-    // earliestDate = Math.min(...dateObjects);
-
-    console.log("earliestDate: " + earliestDate);
 
     // maps hours from first fork
     const hoursFromEarliest = dateObjects.map((dateObject) => {
